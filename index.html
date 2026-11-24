@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LifeLine | Blood Bank Management System (Project Expo)</title>
+    <style>
+        :root {
+            --bg-app: #f4f6fa;
+            --bg-surface: #ffffff;
+            --bg-soft: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+
+            --crimson: #d92d20;
+            --crimson-dark: #b42318;
+            --crimson-soft: #fef3f2;
+
+            --orange: #ea580c;
+            --orange-soft: #fff7ed;
+
+            --green: #15803d;
+            --green-soft: #f0fdf4;
+
+            --blue: #1d4ed8;
+            --blue-soft: #eff6ff;
+
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+
+            --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+            --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.06);
+            --shadow-lg: 0 16px 36px rgba(180, 35, 24, 0.14);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ================= APP SHELL ================= */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(2px);
+            z-index: 25;
+        }
+
+        .sidebar-backdrop.open {
+            display: block;
+        }
+
+        /* ================= SIDEBAR ================= */
+        .sidebar {
+            width: 268px;
+            flex-shrink: 0;
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            padding: 22px 16px;
+            z-index: 30;
+            transition: transform 0.24s ease;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 10px 18px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 13px;
+            background: linear-gradient(135deg, var(--crimson), #f04438);
+            color: #ffffff;
+            display: grid;
+            place-items: center;
+            font-size: 1.25rem;
+            box-shadow: 0 6px 16px rgba(217, 45, 32, 0.28);
+        }
+
+        .brand h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .brand small {
+            display: block;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .menu-title {
+            margin: 16px 12px 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+        }
+
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            color: #475569;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.16s ease;
+        }
+
+        .sidebar nav a:hover {
+            background: var(--bg-soft);
+            color: var(--text-main);
+            transform: translateX(2px);
+        }
+
+        .sidebar nav a.active {
+            background: var(--crimson-soft);
+            color: var(--crimson);
+            font-weight: 600;
+            box-shadow: inset 3px 0 0 var(--crimson);
+        }
+
+        .sidebar-bottom {
+            margin-top: 14px;
+            padding: 14px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(160deg, #fff5f5 0%, #ffe4e6 100%);
+            border: 1px solid #fecdd3;
+            text-align: center;
+        }
+
+        .sidebar-bottom .heart {
+            font-size: 1.3rem;
+            color: var(--crimson);
+            line-height: 1.2;
+        }
+
+        .sidebar-bottom p {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: var(--crimson-dark);
+            margin-top: 3px;
+        }
+
+        .sidebar-bottom small {
+            font-size: 0.74rem;
+            color: #9f1239;
+        }
+
+        /* ================= MAIN AREA ================= */
+        .main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ================= TOPBAR ================= */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 15;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            color: var(--text-main);
+            font-size: 1.2rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .topbar h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .topbar p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: var(--green-soft);
+            color: var(--green);
+            font-size: 0.78rem;
+            font-weight: 700;
+            border: 1px solid #bbf7d0;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 14px 5px 5px;
+            border-radius: 999px;
+            background: var(--bg-soft);
+            border: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .profile-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--text-main);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: grid;
+            place-items: center;
+        }
+
+        .profile span {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* ================= SECTIONS & HEADINGS ================= */
+        .content {
+            padding: 28px 32px 0;
+        }
+
+        .section-space {
+            padding-top: 38px;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .section-heading h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+        }
+
+        .section-heading p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            display: grid;
+            place-items: center;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ================= WELCOME BANNER ================= */
+        .welcome {
+            background: linear-gradient(125deg, #b42318 0%, #d92d20 55%, #ef4444 100%);
+            color: #ffffff;
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .welcome-tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            background: rgba(255, 255, 255, 0.18);
+            padding: 5px 12px;
+            border-radius: 999px;
+            margin-bottom: 12px;
+        }
+
+        .welcome h1 {
+            font-size: clamp(1.65rem, 2.8vw, 2.2rem);
+            line-height: 1.18;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 10px;
+        }
+
+        .welcome h1 span {
+            color: #fecdd3;
+        }
+
+        .welcome p {
+            max-width: 540px;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.92);
+            margin-bottom: 20px;
+        }
+
+        .welcome-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .welcome-art {
+            width: 112px;
+            height: 112px;
+            flex-shrink: 0;
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            display: grid;
+            place-items: center;
+            font-size: 3.3rem;
+        }
+
+        /* ================= BUTTONS ================= */
+        .primary-btn,
+        .secondary-btn,
+        .danger-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .primary-btn {
+            background: var(--crimson);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(217, 45, 32, 0.25);
+        }
+
+        .primary-btn:hover {
+            background: var(--crimson-dark);
+            transform: translateY(-1px);
+        }
+
+        .welcome .primary-btn {
+            background: #ffffff;
+            color: var(--crimson-dark);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+        }
+
+        .welcome .primary-btn:hover {
+            background: #fff5f5;
+        }
+
+        .secondary-btn {
+            background: var(--bg-soft);
+            color: var(--text-main);
+            border: 1px solid #cbd5e1;
+        }
+
+        .welcome .secondary-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+        }
+
+        .secondary-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .welcome .secondary-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .danger-btn {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .danger-btn:hover {
+            background: #fecaca;
+        }
+
+        /* ================= STATS ================= */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+        }
+
+        .stat-card.orange .stat-icon {
+            background: var(--orange-soft);
+            color: var(--orange);
+        }
+
+        .stat-card.green .stat-icon {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .stat-card.light-orange .stat-icon {
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        .stat-card.light-green .stat-icon {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .stat-card p {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .stat-card h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin: 4px 0 2px;
+        }
+
+        .stat-card small {
+            font-size: 0.76rem;
+            color: #94a3b8;
+        }
+
+        /* ================= QUICK ACTIONS ================= */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .action-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-decoration: none;
+            color: var(--text-main);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.18s ease;
+        }
+
+        .action-card:hover {
+            border-color: #fecdd3;
+            background: #fffafa;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .action-card span {
+            display: inline-grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: var(--crimson-soft);
+            color: var(--crimson);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .action-card h3 {
+            font-size: 0.98rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .action-card p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        /* ================= FORMS & CARDS ================= */
+        .form-card,
+        .table-card,
+        .info-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .form-card h3,
+        .info-card h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: var(--radius-sm);
+            font-size: 0.92rem;
+            font-family: inherit;
+            color: var(--text-main);
+            background: var(--bg-surface);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--crimson);
+            box-shadow: 0 0 0 3px rgba(217, 45, 32, 0.12);
+        }
+
+        .message {
+            margin-top: 12px;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        /* ================= SEARCH & COMPATIBILITY ================= */
+        .search-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .search-row select {
+            max-width: 320px;
+        }
+
+        .compat-box {
+            margin-top: 16px;
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            background: var(--blue-soft);
+            border: 1px solid #bfdbfe;
+            color: #1e3a8a;
+            font-size: 0.88rem;
+        }
+
+        #searchResults {
+            margin-top: 18px;
+        }
+
+        /* ================= TABLE ================= */
+        .table-card {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .table-scroll {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        thead {
+            background: var(--bg-soft);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            padding: 13px 18px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        td {
+            padding: 13px 18px;
+            font-size: 0.9rem;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        td[colspan="4"],
+        td[colspan="5"] {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 24px;
+        }
+
+        .pill-group {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: var(--crimson-soft);
+            color: var(--crimson-dark);
+            font-weight: 700;
+            font-size: 0.82rem;
+        }
+
+        /* ================= INVENTORY ================= */
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .stock-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--crimson);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stock-card.low-stock {
+            border-left-color: var(--orange);
+            background: #fffdfb;
+        }
+
+        .stock-card h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--crimson-dark);
+            margin-bottom: 4px;
+        }
+
+        .stock-card p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        .stock-status {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .stock-card.low-stock .stock-status {
+            background: var(--orange-soft);
+            color: var(--orange);
+        }
+
+        .two-col-forms {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        /* ================= ABOUT, ARCHITECTURE & TEAM ================= */
+        .info-card p {
+            color: #475569;
+            font-size: 0.93rem;
+            margin-bottom: 14px;
+        }
+
+        .info-card ul {
+            padding-left: 20px;
+            color: #334155;
+            font-size: 0.92rem;
+            margin-bottom: 16px;
+        }
+
+        .info-card li {
+            margin-bottom: 6px;
+        }
+
+        .arch-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 12px;
+        }
+
+        .arch-box {
+            background: var(--bg-soft);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+        }
+
+        .arch-box h4 {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--crimson-dark);
+            margin-bottom: 6px;
+        }
+
+        .arch-box p {
+            font-size: 0.84rem;
+            margin-bottom: 0;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .team-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .avatar {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: var(--crimson);
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 12px;
+        }
+
+        .avatar.green-avatar {
+            background: var(--green);
+        }
+
+        .team-card h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .team-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .project-details p {
+            margin-bottom: 8px;
+        }
+
+        /* ================= FOOTER ================= */
+        footer {
+            margin-top: 40px;
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border-color);
+            padding: 28px 32px;
+            text-align: center;
+        }
+
+        footer h2 {
+            font-size: 1.15rem;
+            color: var(--crimson-dark);
+            margin-bottom: 4px;
+        }
+
+        footer p {
+            font-size: 0.88rem;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+
+        footer small {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media (max-width: 1100px) {
+            .stats,
+            .quick-actions,
+            .stock-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .arch-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .menu-toggle {
+                display: inline-flex;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .topbar,
+            .content,
+            footer {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .welcome {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 24px;
+            }
+
+            .welcome-art {
+                display: none;
+            }
+
+            .two-col-forms {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats,
+            .quick-actions,
+            .stock-grid,
+            .form-grid,
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-row {
+                flex-direction: column;
+            }
+
+            .search-row select {
+                max-width: none;
+            }
+
+            .profile span,
+            .badge-live {
+                display: none;
+            }
+        }
+
+        /* ================= LOGIN ================= */
+        .login-screen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(125deg, #7a1810 0%, #b42318 45%, #ef4444 100%);
+            overflow-y: auto;
+        }
+
+        body.locked .login-screen {
+            display: flex;
+        }
+
+        body.locked .app {
+            display: none;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .login-card .brand-icon {
+            margin: 0 auto 14px;
+            width: 58px;
+            height: 58px;
+            font-size: 1.6rem;
+        }
+
+        .login-card h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .login-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 4px 0 22px;
+        }
+
+        .login-card form {
+            text-align: left;
+        }
+
+        .login-card .field {
+            margin-bottom: 16px;
+        }
+
+        .pass-wrap {
+            position: relative;
+        }
+
+        .pass-wrap input {
+            padding-right: 64px;
+        }
+
+        .pass-toggle {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: var(--crimson);
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            padding: 6px;
+        }
+
+        .login-card .primary-btn {
+            width: 100%;
+            padding: 12px 18px;
+        }
+
+        .login-hint {
+            margin-top: 16px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--blue-soft);
+            border: 1px solid #bfdbfe;
+            color: #1e3a8a;
+            font-size: 0.82rem;
+            text-align: center;
+        }
+
+        .logout-btn {
+            padding: 8px 14px;
+            font-size: 0.82rem;
+        }
+
+        /* ================= CERTIFICATE ================= */
+        .cert-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 18px 0 4px;
+        }
+
+        .check-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            font-size: 0.88rem;
+            color: #334155;
+        }
+
+        .check-row input {
+            width: 18px;
+            height: 18px;
+            padding: 0;
+        }
+
+        .check-row label {
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .cert-wrap {
+            margin-top: 22px;
+            overflow-x: auto;
+        }
+
+        .cert {
+            position: relative;
+            min-width: 640px;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 14px;
+            background: #fffdf7;
+            border: 8px double #b42318;
+            font-family: Georgia, "Times New Roman", serif;
+            color: #1f2937;
+            box-shadow: var(--shadow-md);
+        }
+
+        .cert-inner {
+            border: 2px solid #d4a017;
+            padding: 30px 40px 26px;
+            text-align: center;
+        }
+
+        .cert-logo {
+            width: 62px;
+            height: 62px;
+            margin: 0 auto 6px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d92d20, #f04438);
+            color: #ffffff;
+            font-size: 1.9rem;
+            display: grid;
+            place-items: center;
+        }
+
+        .cert-org {
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #b42318;
+        }
+
+        .cert-college {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .cert-title {
+            font-size: 2.3rem;
+            font-weight: 700;
+            color: #7a1810;
+            margin: 16px 0 2px;
+            letter-spacing: 0.02em;
+        }
+
+        .cert-subtitle {
+            font-size: 0.95rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: #b8860b;
+            margin-bottom: 18px;
+        }
+
+        .cert-line {
+            font-size: 1rem;
+            color: #4b5563;
+            margin: 6px 0;
+        }
+
+        .cert-name {
+            display: inline-block;
+            min-width: 60%;
+            font-size: 2.1rem;
+            font-style: italic;
+            font-weight: 700;
+            color: #111827;
+            padding: 4px 24px 6px;
+            margin: 8px 0 12px;
+            border-bottom: 2px solid #d4a017;
+        }
+
+        .cert-text {
+            max-width: 640px;
+            margin: 0 auto;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #374151;
+        }
+
+        .cert-meta {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin: 18px 0 6px;
+        }
+
+        .cert-chip {
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: #fef3f2;
+            border: 1px solid #fecdd3;
+            color: #b42318;
+            font-size: 0.88rem;
+            font-weight: 700;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .cert-quote {
+            margin-top: 14px;
+            font-size: 0.95rem;
+            font-style: italic;
+            color: #b42318;
+        }
+
+        .cert-footer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 28px;
+        }
+
+        .cert-sign {
+            width: 200px;
+            font-size: 0.82rem;
+            color: #4b5563;
+        }
+
+        .cert-sign .line {
+            border-top: 1.5px solid #6b7280;
+            padding-top: 4px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .cert-seal {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            border: 3px double #d4a017;
+            background: radial-gradient(circle, #fff7d6 0%, #fde68a 100%);
+            color: #b42318;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            line-height: 1.2;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .cert-seal b {
+            display: block;
+            font-size: 1.5rem;
+        }
+
+        .cert-number {
+            margin-top: 14px;
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+
+            body * {
+                visibility: hidden;
+            }
+
+            #certificateArea,
+            #certificateArea * {
+                visibility: visible;
+            }
+
+            #certificateArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                overflow: visible;
+            }
+
+            .cert {
+                box-shadow: none;
+                min-width: 0;
+                max-width: none;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body class="locked">
+    <!-- LOGIN -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="brand-icon">❤</div>
+            <h1>LifeLine</h1>
+            <p class="login-sub">Blood Bank Management System • Staff Login</p>
+
+            <form id="loginForm" autocomplete="off">
+                <div class="field">
+                    <label for="loginUser">Username</label>
+                    <input type="text" id="loginUser" placeholder="Enter username" required />
+                </div>
+                <div class="field">
+                    <label for="loginPass">Password</label>
+                    <div class="pass-wrap">
+                        <input type="password" id="loginPass" placeholder="Enter password" required />
+                        <button type="button" class="pass-toggle" id="passToggle">Show</button>
+                    </div>
+                </div>
+                <button type="submit" class="primary-btn">Login</button>
+                <p id="loginMessage" class="message" style="text-align:center"></p>
+            </form>
+
+            <div class="login-hint">Demo login: <strong>admin</strong> / <strong>admin123</strong></div>
+        </div>
+    </div>
+
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="app">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div>
+                <div class="brand">
+                    <div class="brand-icon">❤</div>
+                    <div>
+                        <h2>LifeLine</h2>
+                        <small>Blood Bank System</small>
+                    </div>
+                </div>
+
+                <p class="menu-title">MAIN MENU</p>
+
+                <nav>
+                    <a href="#dashboard" class="active">▦ Dashboard</a>
+                    <a href="#add-donor">♙ Add Donor</a>
+                    <a href="#donors">♧ Donor Records</a>
+                    <a href="#search">⌕ Search Donor</a>
+                    <a href="#inventory">🩸 Blood Inventory</a>
+                    <a href="#certificate">🏅 Certificate</a>
+                    <a href="#about">ⓘ About &amp; Expo Info</a>
+                    <a href="#team">♙ Our Team</a>
+                </nav>
+            </div>
+
+            <div class="sidebar-bottom">
+                <div class="heart">❤</div>
+                <p>Project Expo Ready</p>
+                <small>Every Drop Counts. Every Life Matters.</small>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main">
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button type="button" class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">☰</button>
+                    <div>
+                        <h2>Blood Bank Management</h2>
+                        <p id="liveDateTime">Madhav Institute of Technology &amp; Science</p>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <span class="badge-live">● System Active</span>
+                    <div class="profile">
+                        <div class="profile-icon">A</div>
+                        <span id="profileName">Administrator</span>
+                    </div>
+                    <button type="button" class="secondary-btn logout-btn" id="logoutBtn">Logout</button>
+                </div>
+            </header>
+
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="content">
+                <div class="welcome">
+                    <div>
+                        <span class="welcome-tag">PROJECT EXPO EDITION • LIFELINE</span>
+                        <h1>Every Drop Counts.<br /><span>Every Life Matters.</span></h1>
+                        <p>
+                            Complete Blood Bank Management System to register donors, track blood group inventory,
+                            issue units in emergencies, and check donor compatibility in real time.
+                        </p>
+                        <div class="welcome-actions">
+                            <a href="#add-donor" class="primary-btn">+ Register New Donor</a>
+                            <button type="button" class="secondary-btn" onclick="resetDemoData()">↻ Reset Sample Data</button>
+                        </div>
+                    </div>
+                    <div class="welcome-art">🩸</div>
+                </div>
+
+                <!-- STATISTICS -->
+                <div class="stats">
+                    <div class="stat-card orange">
+                        <div class="stat-icon">♙</div>
+                        <p>Total Donors</p>
+                        <h2 id="totalDonors">0</h2>
+                        <small>Registered donors</small>
+                    </div>
+
+                    <div class="stat-card green">
+                        <div class="stat-icon">🩸</div>
+                        <p>Total Blood Units</p>
+                        <h2 id="totalUnits">0</h2>
+                        <small>Available inventory</small>
+                    </div>
+
+                    <div class="stat-card light-orange">
+                        <div class="stat-icon">♥</div>
+                        <p>Blood Groups</p>
+                        <h2>8</h2>
+                        <small>ABO &amp; Rh supported</small>
+                    </div>
+
+                    <div class="stat-card light-green">
+                        <div class="stat-icon">✓</div>
+                        <p>Units Issued</p>
+                        <h2 id="issuedUnits">0</h2>
+                        <small>Recorded dispatches</small>
+                    </div>
+                </div>
+
+                <!-- QUICK ACTIONS -->
+                <div class="section-heading">
+                    <div>
+                        <h2>Quick Actions</h2>
+                        <p>Jump straight into core modules during your expo demo</p>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <a href="#add-donor" class="action-card">
+                        <span>＋</span>
+                        <h3>Add Donor</h3>
+                        <p>Register a new blood donor</p>
+                    </a>
+
+                    <a href="#donors" class="action-card">
+                        <span>♧</span>
+                        <h3>View Donors</h3>
+                        <p>Inspect or manage records</p>
+                    </a>
+
+                    <a href="#search" class="action-card">
+                        <span>⌕</span>
+                        <h3>Search &amp; Match</h3>
+                        <p>Find group &amp; compatibility</p>
+                    </a>
+
+                    <a href="#inventory" class="action-card">
+                        <span>🩸</span>
+                        <h3>Stock &amp; Issue</h3>
+                        <p>Update or issue blood units</p>
+                    </a>
+                </div>
+            </section>
+
+            <!-- ADD DONOR -->
+            <section id="add-donor" class="content section-space">
+                <div class="section-heading">
+                    <div>
+                        <h2>Donor Registration</h2>
+                        <p>Add a new donor record with validation and instant persistence</p>
+                    </div>
+                    <span class="section-icon">♙</span>
+                </div>
+
+                <div class="form-card">
+                    <form id="donorForm">
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="donorId">Donor ID</label>
+                                <input type="number" id="donorId" placeholder="e.g. 105" min="1" required />
+                            </div>
+
+                            <div class="field">
+                                <label for="donorName">Full Name</label>
+                                <input type="text" id="donorName" placeholder="e.g. Aarav Sharma" required />
+                            </div>
+
+                            <div class="field">
+                                <label for="donorGroup">Blood Group</label>
+                                <select id="donorGroup" required>
+                                    <option value="">Select blood group</option>
+                                    <option>A+</option>
+                                    <option>A-</option>
+                                    <option>B+</option>
+                                    <option>B-</option>
+                                    <option>AB+</option>
+                                    <option>AB-</option>
+                                    <option>O+</option>
+                                    <option>O-</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="donorPhone">Phone Number</label>
+                                <input type="tel" id="donorPhone" placeholder="e.g. 9876543210" required />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="primary-btn">Save Donor Record</button>
+                        <p id="donorMessage" class="message"></p>
+                    </form>
+                </div>
+            </section>
+
+            <!-- DONOR RECORDS -->
+            <section id="donors" class="content section-space">
+                <div class="section-heading">
+                    <div>
+                        <h2>Donor Records</h2>
+                        <p>All registered blood donors in the system</p>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Donor ID</th>
+                                    <th>Name</th>
+                                    <th>Blood Group</th>
+                                    <th>Phone Number</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="donorTable">
+                                <tr>
+                                    <td colspan="5">No donor records found.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEARCH DONOR -->
+            <section id="search" class="content section-space">
+                <div class="section-heading">
+                    <div>
+                        <h2>Search Donors &amp; Compatibility</h2>
+                        <p>Filter donors by blood group and view recipient compatibility</p>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <label for="searchGroup">Select Blood Group</label>
+                    <div class="search-row">
+                        <select id="searchGroup" onchange="updateCompatibilityPreview()">
+                            <option value="">Choose blood group</option>
+                            <option>A+</option>
+                            <option>A-</option>
+                            <option>B+</option>
+                            <option>B-</option>
+                            <option>AB+</option>
+                            <option>AB-</option>
+                            <option>O+</option>
+                            <option>O-</option>
+                        </select>
+                        <button type="button" class="primary-btn" onclick="searchDonors()">Search Donors</button>
+                    </div>
+
+                    <div id="compatPreview" class="compat-box">
+                        Select a blood group above to see which recipient groups it can donate to and receive from.
+                    </div>
+
+                    <div id="searchResults"></div>
+                </div>
+            </section>
+
+            <!-- INVENTORY -->
+            <section id="inventory" class="content section-space">
+                <div class="section-heading">
+                    <div>
+                        <h2>Blood Inventory &amp; Dispatch</h2>
+                        <p>Low-stock alerts (≤ 3 units highlighted), stock updates, and emergency issue</p>
+                    </div>
+                </div>
+
+                <div id="stockGrid" class="stock-grid"></div>
+
+                <div class="two-col-forms">
+                    <div class="form-card">
+                        <h3>Update Available Stock</h3>
+                        <form id="stockForm">
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="stockGroup">Blood Group</label>
+                                    <select id="stockGroup" required>
+                                        <option value="">Select group</option>
+                                        <option>A+</option>
+                                        <option>A-</option>
+                                        <option>B+</option>
+                                        <option>B-</option>
+                                        <option>AB+</option>
+                                        <option>AB-</option>
+                                        <option>O+</option>
+                                        <option>O-</option>
+                                    </select>
+                                </div>
+
+                                <div class="field">
+                                    <label for="stockUnits">Set Available Units</label>
+                                    <input type="number" id="stockUnits" placeholder="e.g. 10" min="0" required />
+                                </div>
+                            </div>
+                            <button type="submit" class="primary-btn">Update Stock</button>
+                            <p id="stockMessage" class="message"></p>
+                        </form>
+                    </div>
+
+                    <div class="form-card">
+                        <h3>Issue Blood (Emergency Dispatch)</h3>
+                        <form id="issueForm">
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="issueGroup">Blood Group</label>
+                                    <select id="issueGroup" required>
+                                        <option value="">Select group</option>
+                                        <option>A+</option>
+                                        <option>A-</option>
+                                        <option>B+</option>
+                                        <option>B-</option>
+                                        <option>AB+</option>
+                                        <option>AB-</option>
+                                        <option>O+</option>
+                                        <option>O-</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label for="issueUnits">Units to Issue</label>
+                                    <input type="number" id="issueUnits" placeholder="e.g. 2" min="1" required />
+                                </div>
+                            </div>
+                            <button type="submit" class="primary-btn">Issue Units</button>
+                            <p id="issueMessage" class="message"></p>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CERTIFICATE -->
+            <section id="certificate" class="content section-space">
+                <div class="section-heading">
+                    <div>
+                        <h2>Donation Certificate</h2>
+                        <p>Generate a certificate of appreciation for a donor after blood donation</p>
+                    </div>
+                    <span class="section-icon">🏅</span>
+                </div>
+
+                <div class="form-card">
+                    <form id="certForm">
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="certDonor">Select Donor</label>
+                                <select id="certDonor" required></select>
+                            </div>
+                            <div class="field">
+                                <label for="certDate">Date of Donation</label>
+                                <input type="date" id="certDate" required />
+                            </div>
+                            <div class="field">
+                                <label for="certVolume">Blood Donated (ml)</label>
+                                <input type="number" id="certVolume" value="350" min="100" max="600" required />
+                            </div>
+                            <div class="field">
+                                <label for="certPlaceInput">Donation Camp / Place</label>
+                                <input type="text" id="certPlaceInput" value="LifeLine Blood Bank, MITS Gwalior" required />
+                            </div>
+                        </div>
+                        <div class="check-row">
+                            <input type="checkbox" id="certAddStock" checked />
+                            <label for="certAddStock">Add 1 unit of this donor's blood group to inventory</label>
+                        </div>
+                        <button type="submit" class="primary-btn">Generate Certificate</button>
+                        <p id="certMessage" class="message"></p>
+                    </form>
+                </div>
+
+                <div id="certificateArea" class="cert-wrap" style="display:none">
+                    <div class="cert">
+                        <div class="cert-inner">
+                            <div class="cert-logo">❤</div>
+                            <div class="cert-org">LifeLine Blood Bank</div>
+                            <div class="cert-college">Madhav Institute of Technology &amp; Science, Gwalior</div>
+
+                            <div class="cert-title">Certificate</div>
+                            <div class="cert-subtitle">of Appreciation</div>
+
+                            <div class="cert-line">This certificate is proudly presented to</div>
+                            <div class="cert-name" id="certName">Donor Name</div>
+
+                            <p class="cert-text">
+                                for the noble act of voluntarily donating blood on
+                                <strong id="certDateText"></strong> at <strong id="certPlaceText"></strong>.
+                                Your selfless gift has the power to save precious lives.
+                                We sincerely thank you for your kindness and humanity.
+                            </p>
+
+                            <div class="cert-meta">
+                                <span class="cert-chip">Donor ID: <span id="certId"></span></span>
+                                <span class="cert-chip">Blood Group: <span id="certGroup"></span></span>
+                                <span class="cert-chip">Quantity: <span id="certMl"></span> ml</span>
+                            </div>
+
+                            <div class="cert-quote">“Every Drop Counts. Every Life Matters.”</div>
+
+                            <div class="cert-footer">
+                                <div class="cert-sign">
+                                    <div class="line">Medical Officer</div>
+                                    LifeLine Blood Bank
+                                </div>
+                                <div class="cert-seal"><div><b>❤</b>OFFICIAL<br />SEAL</div></div>
+                                <div class="cert-sign">
+                                    <div class="line">Administrator</div>
+                                    LifeLine Blood Bank
+                                </div>
+                            </div>
+
+                            <div class="cert-number">Certificate No: <span id="certNo"></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cert-actions" id="certButtons" style="display:none">
+                    <button type="button" class="primary-btn" onclick="printCertificate()">🖨 Print / Save as PDF</button>
+                </div>
+            </section>
+
+            <!-- ABOUT -->
+            <section id="about" class="content section-space">
+                <div class="section-heading">
+                    <div>
+                        <h2>About &amp; Expo Info</h2>
+                        <p>Project overview and technical architecture</p>
+                    </div>
+                </div>
+
+                <div class="info-card project-details">
+                    <h3>LifeLine – Blood Bank Management System</h3>
+                    <p><strong>College:</strong> Madhav Institute of Technology &amp; Science</p>
+                    <p>
+                        LifeLine helps a blood bank register donors, monitor stock of all eight blood groups,
+                        raise low-stock alerts, issue units during emergencies and check donor–recipient compatibility.
+                    </p>
+                    <ul>
+                        <li>Donor registration with validation (unique ID, 10-digit phone)</li>
+                        <li>Live inventory with low-stock alerts (3 units or fewer)</li>
+                        <li>Emergency issue of units with automatic stock deduction</li>
+                        <li>Search by blood group with compatibility chart</li>
+                        <li>Secure staff login with logout</li>
+                        <li>Printable donation certificate for every donor</li>
+                    </ul>
+                    <div class="arch-grid">
+                        <div class="arch-box">
+                            <h4>Frontend</h4>
+                            <p>HTML5 and CSS3 responsive dashboard UI.</p>
+                        </div>
+                        <div class="arch-box">
+                            <h4>Logic</h4>
+                            <p>Vanilla JavaScript for validation, search, compatibility and stock handling.</p>
+                        </div>
+                        <div class="arch-box">
+                            <h4>Storage</h4>
+                            <p>Browser localStorage keeps data saved after refresh.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TEAM -->
+            <section id="team" class="content section-space">
+                <div class="section-heading">
+                    <div>
+                        <h2>Our Team</h2>
+                        <p>Students of Madhav Institute of Technology &amp; Science</p>
+                    </div>
+                </div>
+
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="avatar">D</div>
+                        <h3>Durgavati Lodhi</h3>
+                        <p>Roll No: BTIT 26O1051</p>
+                        <p>B.Tech IT • MITS</p>
+                    </div>
+                    <div class="team-card">
+                        <div class="avatar green-avatar">D</div>
+                        <h3>Durgesh Sharawat</h3>
+                        <p>Roll No: BTIT 26O1052</p>
+                        <p>B.Tech IT • MITS</p>
+                    </div>
+                </div>
+            </section>
+
+            <footer>
+                <h2>LifeLine</h2>
+                <p>Every Drop Counts. Every Life Matters.</p>
+                <p>Madhav Institute of Technology &amp; Science</p>
+                <small>Blood Bank Management System • Project Expo</small>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        "use strict";
+
+        var GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+        var LOW_STOCK = 3;
+        var KEY_DONORS = "lifeline_donors";
+        var KEY_STOCK = "lifeline_stock";
+        var KEY_ISSUED = "lifeline_issued";
+        var KEY_CERTS = "lifeline_certs";
+        var KEY_AUTH = "lifeline_auth";
+        var ADMIN_USER = "admin";
+        var ADMIN_PASS = "admin123";
+
+        var DONATES_TO = {
+            "O-": ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"],
+            "O+": ["O+", "A+", "B+", "AB+"],
+            "A-": ["A-", "A+", "AB-", "AB+"],
+            "A+": ["A+", "AB+"],
+            "B-": ["B-", "B+", "AB-", "AB+"],
+            "B+": ["B+", "AB+"],
+            "AB-": ["AB-", "AB+"],
+            "AB+": ["AB+"]
+        };
+
+        function defaultDonors() {
+            return [
+                { id: 101, name: "Aarav Sharma", group: "O+", phone: "9876543210" },
+                { id: 102, name: "Priya Verma", group: "A+", phone: "9811122233" },
+                { id: 103, name: "Rohan Singh", group: "B-", phone: "9922334455" },
+                { id: 104, name: "Neha Gupta", group: "AB+", phone: "9700011122" }
+            ];
+        }
+
+        function defaultStock() {
+            return { "A+": 12, "A-": 4, "B+": 9, "B-": 2, "AB+": 5, "AB-": 1, "O+": 15, "O-": 3 };
+        }
+
+        /* ---------- storage (works even if localStorage is blocked) ---------- */
+        var memory = {};
+
+        function load(key, fallback) {
+            try {
+                var raw = localStorage.getItem(key);
+                if (raw !== null) return JSON.parse(raw);
+            } catch (e) { /* ignore */ }
+            if (memory[key] !== undefined) return memory[key];
+            return fallback;
+        }
+
+        function save(key, value) {
+            memory[key] = value;
+            try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* ignore */ }
+        }
+
+        var donors = load(KEY_DONORS, null) || defaultDonors();
+        var stock = load(KEY_STOCK, null) || defaultStock();
+        var issued = Number(load(KEY_ISSUED, 0)) || 0;
+        var certCount = Number(load(KEY_CERTS, 0)) || 0;
+
+        /* ---------- helpers ---------- */
+        function $(id) { return document.getElementById(id); }
+
+        function esc(s) {
+            return String(s).replace(/[&<>"']/g, function (c) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+            });
+        }
+
+        function setMsg(id, text, ok) {
+            var el = $(id);
+            el.textContent = text;
+            el.style.color = ok ? "#15803d" : "#b91c1c";
+        }
+
+        function persistAll() {
+            save(KEY_DONORS, donors);
+            save(KEY_STOCK, stock);
+            save(KEY_ISSUED, issued);
+            save(KEY_CERTS, certCount);
+        }
+
+        /* ---------- rendering ---------- */
+        function renderDonors() {
+            var tbody = $("donorTable");
+            if (!donors.length) {
+                tbody.innerHTML = '<tr><td colspan="5">No donor records found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = donors.map(function (d) {
+                return "<tr>" +
+                    "<td>" + esc(d.id) + "</td>" +
+                    "<td>" + esc(d.name) + "</td>" +
+                    '<td><span class="pill-group">' + esc(d.group) + "</span></td>" +
+                    "<td>" + esc(d.phone) + "</td>" +
+                    '<td><button type="button" class="danger-btn" data-delete="' + esc(d.id) + '">Delete</button></td>' +
+                    "</tr>";
+            }).join("");
+        }
+
+        function renderStock() {
+            $("stockGrid").innerHTML = GROUPS.map(function (g) {
+                var units = Number(stock[g]) || 0;
+                var low = units <= LOW_STOCK;
+                return '<div class="stock-card' + (low ? " low-stock" : "") + '">' +
+                    "<h3>" + g + "</h3>" +
+                    "<p>" + units + " unit" + (units === 1 ? "" : "s") + "</p>" +
+                    '<span class="stock-status">' + (low ? "Low Stock" : "In Stock") + "</span>" +
+                    "</div>";
+            }).join("");
+        }
+
+        function renderStats() {
+            var total = 0;
+            GROUPS.forEach(function (g) { total += Number(stock[g]) || 0; });
+            $("totalDonors").textContent = donors.length;
+            $("totalUnits").textContent = total;
+            $("issuedUnits").textContent = issued;
+        }
+
+        function renderDonorOptions() {
+            var sel = $("certDonor");
+            var keep = sel.value;
+            sel.innerHTML = '<option value="">Select donor</option>' + donors.map(function (d) {
+                return '<option value="' + esc(d.id) + '">' + esc(d.name) + " (" + esc(d.group) + ") - ID " + esc(d.id) + "</option>";
+            }).join("");
+            sel.value = keep;
+        }
+
+        function renderAll() {
+            renderDonorOptions();
+            renderDonors();
+            renderStock();
+            renderStats();
+        }
+
+        /* ---------- add donor ---------- */
+        $("donorForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            var id = parseInt($("donorId").value, 10);
+            var name = $("donorName").value.trim();
+            var group = $("donorGroup").value;
+            var phone = $("donorPhone").value.trim();
+
+            if (!id || id < 1) return setMsg("donorMessage", "Please enter a valid Donor ID.", false);
+            if (name.length < 2) return setMsg("donorMessage", "Please enter the donor's full name.", false);
+            if (GROUPS.indexOf(group) === -1) return setMsg("donorMessage", "Please select a blood group.", false);
+            if (!/^\d{10}$/.test(phone)) return setMsg("donorMessage", "Phone number must be exactly 10 digits.", false);
+
+            var exists = donors.some(function (d) { return Number(d.id) === id; });
+            if (exists) return setMsg("donorMessage", "Donor ID " + id + " already exists. Use a different ID.", false);
+
+            donors.push({ id: id, name: name, group: group, phone: phone });
+            persistAll();
+            renderAll();
+            $("donorForm").reset();
+            setMsg("donorMessage", "Donor " + name + " saved successfully.", true);
+        });
+
+        /* ---------- delete donor ---------- */
+        $("donorTable").addEventListener("click", function (e) {
+            var btn = e.target.closest("[data-delete]");
+            if (!btn) return;
+            var id = Number(btn.getAttribute("data-delete"));
+            if (!window.confirm("Delete donor ID " + id + "?")) return;
+            donors = donors.filter(function (d) { return Number(d.id) !== id; });
+            persistAll();
+            renderAll();
+        });
+
+        /* ---------- search & compatibility ---------- */
+        function canReceiveFrom(group) {
+            return GROUPS.filter(function (g) { return DONATES_TO[g].indexOf(group) !== -1; });
+        }
+
+        function updateCompatibilityPreview() {
+            var g = $("searchGroup").value;
+            var box = $("compatPreview");
+            if (!g) {
+                box.textContent = "Select a blood group above to see which recipient groups it can donate to and receive from.";
+                return;
+            }
+            box.innerHTML = "<strong>" + esc(g) + "</strong> can donate to: " + DONATES_TO[g].join(", ") +
+                "<br /><strong>" + esc(g) + "</strong> can receive from: " + canReceiveFrom(g).join(", ");
+        }
+
+        function searchDonors() {
+            var g = $("searchGroup").value;
+            var out = $("searchResults");
+            if (!g) {
+                out.innerHTML = '<p class="message" style="color:#b91c1c">Please select a blood group first.</p>';
+                return;
+            }
+            var found = donors.filter(function (d) { return d.group === g; });
+            if (!found.length) {
+                out.innerHTML = '<p class="message" style="color:#64748b">No donors found with blood group ' + esc(g) + ".</p>";
+                return;
+            }
+            out.innerHTML = '<div class="table-card"><div class="table-scroll"><table>' +
+                "<thead><tr><th>Donor ID</th><th>Name</th><th>Blood Group</th><th>Phone Number</th></tr></thead><tbody>" +
+                found.map(function (d) {
+                    return "<tr><td>" + esc(d.id) + "</td><td>" + esc(d.name) +
+                        '</td><td><span class="pill-group">' + esc(d.group) + "</span></td><td>" + esc(d.phone) + "</td></tr>";
+                }).join("") + "</tbody></table></div></div>";
+        }
+
+        /* ---------- stock update ---------- */
+        $("stockForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            var g = $("stockGroup").value;
+            var units = parseInt($("stockUnits").value, 10);
+            if (GROUPS.indexOf(g) === -1) return setMsg("stockMessage", "Please select a blood group.", false);
+            if (isNaN(units) || units < 0) return setMsg("stockMessage", "Enter a valid number of units (0 or more).", false);
+
+            stock[g] = units;
+            persistAll();
+            renderAll();
+            $("stockForm").reset();
+            setMsg("stockMessage", g + " stock updated to " + units + " unit(s).", true);
+        });
+
+        /* ---------- issue blood ---------- */
+        $("issueForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            var g = $("issueGroup").value;
+            var units = parseInt($("issueUnits").value, 10);
+            if (GROUPS.indexOf(g) === -1) return setMsg("issueMessage", "Please select a blood group.", false);
+            if (isNaN(units) || units < 1) return setMsg("issueMessage", "Enter at least 1 unit to issue.", false);
+
+            var available = Number(stock[g]) || 0;
+            if (units > available) {
+                return setMsg("issueMessage", "Only " + available + " unit(s) of " + g + " available.", false);
+            }
+
+            stock[g] = available - units;
+            issued += units;
+            persistAll();
+            renderAll();
+            $("issueForm").reset();
+            setMsg("issueMessage", units + " unit(s) of " + g + " issued successfully.", true);
+        });
+
+        /* ---------- reset ---------- */
+        function resetDemoData() {
+            if (!window.confirm("Reset all data back to the sample data?")) return;
+            donors = defaultDonors();
+            stock = defaultStock();
+            issued = 0;
+            certCount = 0;
+            persistAll();
+            renderAll();
+            $("searchResults").innerHTML = "";
+        }
+
+        /* ---------- date/time ---------- */
+        function tick() {
+            $("liveDateTime").textContent = "Madhav Institute of Technology & Science • " +
+                new Date().toLocaleString("en-IN", {
+                    day: "numeric", month: "short", year: "numeric",
+                    hour: "2-digit", minute: "2-digit"
+                });
+        }
+
+        /* ---------- mobile sidebar ---------- */
+        function closeSidebar() {
+            $("sidebar").classList.remove("open");
+            $("sidebarBackdrop").classList.remove("open");
+        }
+
+        $("menuToggle").addEventListener("click", function () {
+            $("sidebar").classList.toggle("open");
+            $("sidebarBackdrop").classList.toggle("open");
+        });
+        $("sidebarBackdrop").addEventListener("click", closeSidebar);
+
+        document.querySelectorAll(".sidebar nav a").forEach(function (a) {
+            a.addEventListener("click", function () {
+                document.querySelectorAll(".sidebar nav a").forEach(function (x) { x.classList.remove("active"); });
+                a.classList.add("active");
+                closeSidebar();
+            });
+        });
+
+
+        /* ---------- certificate ---------- */
+        function todayISO() {
+            var d = new Date();
+            var m = String(d.getMonth() + 1).padStart(2, "0");
+            var day = String(d.getDate()).padStart(2, "0");
+            return d.getFullYear() + "-" + m + "-" + day;
+        }
+
+        function prettyDate(iso) {
+            var parts = iso.split("-");
+            var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+            return d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+        }
+
+        $("certDate").value = todayISO();
+
+        $("certForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            var id = Number($("certDonor").value);
+            var date = $("certDate").value;
+            var ml = parseInt($("certVolume").value, 10);
+            var place = $("certPlaceInput").value.trim();
+
+            var donor = donors.filter(function (d) { return Number(d.id) === id; })[0];
+            if (!donor) return setMsg("certMessage", "Please select a donor.", false);
+            if (!date) return setMsg("certMessage", "Please choose the donation date.", false);
+            if (isNaN(ml) || ml < 100 || ml > 600) return setMsg("certMessage", "Quantity must be between 100 and 600 ml.", false);
+            if (!place) return setMsg("certMessage", "Please enter the donation place.", false);
+
+            certCount += 1;
+            var year = date.split("-")[0];
+            var no = "LL-" + year + "-" + String(certCount).padStart(4, "0");
+
+            $("certName").textContent = donor.name;
+            $("certId").textContent = donor.id;
+            $("certGroup").textContent = donor.group;
+            $("certMl").textContent = ml;
+            $("certDateText").textContent = prettyDate(date);
+            $("certPlaceText").textContent = place;
+            $("certNo").textContent = no;
+
+            var added = false;
+            if ($("certAddStock").checked) {
+                stock[donor.group] = (Number(stock[donor.group]) || 0) + 1;
+                added = true;
+            }
+
+            persistAll();
+            renderAll();
+            $("certDonor").value = String(id);
+
+            $("certificateArea").style.display = "block";
+            $("certButtons").style.display = "flex";
+            $("certificateArea").scrollIntoView({ behavior: "smooth", block: "start" });
+            setMsg("certMessage", "Certificate " + no + " generated for " + donor.name + "." +
+                (added ? " 1 unit of " + donor.group + " added to inventory." : ""), true);
+        });
+
+        function printCertificate() {
+            window.print();
+        }
+
+        /* ---------- login / logout ---------- */
+        var authMemory = null;
+
+        function getAuth() {
+            try {
+                var v = sessionStorage.getItem(KEY_AUTH);
+                if (v) return v;
+            } catch (e) { /* ignore */ }
+            return authMemory;
+        }
+
+        function setAuth(user) {
+            authMemory = user;
+            try {
+                if (user) sessionStorage.setItem(KEY_AUTH, user);
+                else sessionStorage.removeItem(KEY_AUTH);
+            } catch (e) { /* ignore */ }
+        }
+
+        function applyAuth() {
+            var user = getAuth();
+            document.body.classList.toggle("locked", !user);
+            if (user) $("profileName").textContent = "Administrator";
+        }
+
+        $("loginForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            var u = $("loginUser").value.trim();
+            var p = $("loginPass").value;
+            if (u === ADMIN_USER && p === ADMIN_PASS) {
+                setAuth(u);
+                $("loginForm").reset();
+                setMsg("loginMessage", "", true);
+                applyAuth();
+                window.scrollTo(0, 0);
+            } else {
+                setMsg("loginMessage", "Incorrect username or password.", false);
+            }
+        });
+
+        $("passToggle").addEventListener("click", function () {
+            var inp = $("loginPass");
+            var show = inp.type === "password";
+            inp.type = show ? "text" : "password";
+            this.textContent = show ? "Hide" : "Show";
+        });
+
+        $("logoutBtn").addEventListener("click", function () {
+            setAuth(null);
+            applyAuth();
+        });
+
+        /* ---------- init ---------- */
+        applyAuth();
+        renderAll();
+        tick();
+        setInterval(tick, 30000);
+    </script>
+</body>
+</html>
